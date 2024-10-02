@@ -1,0 +1,118 @@
+import random
+
+# Preguntas del juego
+preguntas = [
+    {
+        'pregunta': '¿En qué año se lanzó Python por primera vez?',
+        'opciones': ['1989', '1991', '2000', '2008'],
+        'respuesta_correcta': '1991',
+        'premio': 100
+    },
+    {
+        'pregunta': '¿Cuál de los siguientes es un framework web para Python?',
+        'opciones': ['Django', 'React', 'Angular', 'Vue.js'],
+        'respuesta_correcta': 'Django',
+        'premio': 200
+    },
+    {
+        'pregunta': '¿Quién creó el lenguaje de programación Python?',
+        'opciones': ['Dennis Ritchie', 'Bjarne Stroustrup', 'James Gosling', 'Guido van Rossum'],
+        'respuesta_correcta': 'Guido van Rossum',
+        'premio': 300
+    }
+]
+
+# Comodines disponibles
+comodines_disponibles = {
+    '5050': True,
+    'amigo': True,
+    'publico': True
+}
+
+def mostrar_pregunta(pregunta, usar_comodin=False):
+    print("\n" + pregunta['pregunta'])
+    
+    opciones = pregunta['opciones']
+    if usar_comodin:
+        opciones = comodin_5050(pregunta)
+
+    for idx, opcion in enumerate(opciones, 1):
+        if opcion:  # Mostrar solo opciones que no han sido eliminadas
+            print(f"{idx}. {opcion}")
+
+def comodin_5050(pregunta):
+    opciones_incorrectas = [opcion for opcion in pregunta['opciones'] if opcion != pregunta['respuesta_correcta']]
+    opciones_a_eliminar = random.sample(opciones_incorrectas, 2)
+    return [opcion if opcion not in opciones_a_eliminar else '' for opcion in pregunta['opciones']]
+
+def validar_respuesta(pregunta, respuesta_usuario):
+    indice_respuesta = int(respuesta_usuario) - 1
+    return pregunta['opciones'][indice_respuesta] == pregunta['respuesta_correcta']
+
+def jugar():
+    premio_acumulado = 0
+    
+    for idx, pregunta in enumerate(preguntas):
+        print(f"\nPremio acumulado: ${premio_acumulado}")
+        mostrar_comodines()
+        
+        respuesta = input("¿Deseas usar un comodín? (s/n): ").lower()
+        usar_comodin = False
+        
+        if respuesta == 's':
+            comodin = input("Elige un comodín (5050/amigo/publico): ").lower()
+            if comodin in comodines_disponibles and comodines_disponibles[comodin]:
+                if comodin == '5050':
+                    usar_comodin = True
+                    comodines_disponibles['5050'] = False
+                elif comodin == 'amigo':
+                    comodin_llamada_amigo(pregunta)
+                    comodines_disponibles['amigo'] = False
+                elif comodin == 'publico':
+                    comodin_consulta_publico(pregunta)
+                    comodines_disponibles['publico'] = False
+            else:
+                print("Comodín no disponible o no válido.")
+
+        mostrar_pregunta(pregunta, usar_comodin)
+
+        respuesta = input("Selecciona una opción (1-4) o 'r' para retirarte: ")
+        
+        # Comprobar si se quiere retirar
+        if respuesta.lower() == 'r':
+            print(f"Te retiras con un premio de ${premio_acumulado}.")
+            break
+        
+        if validar_respuesta(pregunta, respuesta):
+            premio_acumulado += pregunta['premio']
+            print(f"¡Respuesta correcta! Has ganado ${pregunta['premio']}. Premio acumulado: ${premio_acumulado}\n")
+        else:
+            print(f"Respuesta incorrecta. Te llevas ${premio_acumulado}.")
+            break
+    else:
+        print(f"¡Felicidades! Has ganado el premio máximo de ${premio_acumulado}.")
+
+def mostrar_comodines():
+    print("Comodines disponibles:")
+    for comodin, disponible in comodines_disponibles.items():
+        if disponible:
+            print(f"- {comodin}")
+
+def comodin_llamada_amigo(pregunta):
+    print("Llamando a un amigo...")
+    print(f"Tu amigo sugiere que la respuesta correcta es: {pregunta['respuesta_correcta']}")
+
+def comodin_consulta_publico(pregunta):
+    total_votos = 100
+    respuesta_correcta = pregunta['respuesta_correcta']
+    votos_correctos = random.randint(40, 60)
+    votos_incorrectos = (total_votos - votos_correctos) // (len(pregunta['opciones']) - 1)
+    
+    print("Resultados de la consulta al público:")
+    for opcion in pregunta['opciones']:
+        if opcion == respuesta_correcta:
+            print(f"{opcion}: {votos_correctos}%")
+        else:
+            print(f"{opcion}: {votos_incorrectos}%")
+
+jugar()
