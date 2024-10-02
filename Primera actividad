@@ -1,0 +1,57 @@
+preguntas = [
+    {
+        'pregunta': '¿En qué año se lanzó Python por primera vez?',
+        'opciones': ['1989', '1991', '2000', '2008'],
+        'respuesta_correcta': '1991',
+        'premio': 100
+    },
+    {
+        'pregunta': '¿Cuál de los siguientes es un framework web para Python?',
+        'opciones': ['Django', 'React', 'Angular', 'Vue.js'],
+        'respuesta_correcta': 'Django',
+        'premio': 200
+    },
+    {
+        'pregunta': '¿Quién creó el lenguaje de programación Python?',
+        'opciones': ['Dennis Ritchie', 'Bjarne Stroustrup', 'James Gosling', 'Guido van Rossum'],
+        'respuesta_correcta': 'Guido van Rossum',
+        'premio': 300
+    }
+]
+
+
+def mostrar_pregunta(pregunta):
+    print("\n" + pregunta['pregunta'])
+    for idx, opcion in enumerate(pregunta['opciones'], 1):
+        print(f"{idx}. {opcion}")
+
+
+def validar_respuesta(pregunta, respuesta_usuario):
+    
+    indice_respuesta = int(respuesta_usuario) - 1
+   
+    return pregunta['opciones'][indice_respuesta] == pregunta['respuesta_correcta']
+
+
+def jugar():
+    premio_acumulado = 0
+    
+    
+    for pregunta in preguntas:
+        mostrar_pregunta(pregunta)
+        
+        
+        respuesta = input("Selecciona una opción (1-4): ")
+        
+        
+        if validar_respuesta(pregunta, respuesta):
+            premio_acumulado += pregunta['premio']
+            print(f"¡Respuesta correcta! Has ganado ${pregunta['premio']}. Premio acumulado: ${premio_acumulado}\n")
+        else:
+            print(f"Respuesta incorrecta. Te llevas ${premio_acumulado}.")
+            break
+    else:
+        print(f"¡Felicidades! Has ganado el premio máximo de ${premio_acumulado}.")
+
+
+jugar()
